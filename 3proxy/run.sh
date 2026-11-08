@@ -6,6 +6,7 @@ listen=$(jq -r .listen "$opts")
 port=$(jq -r .port "$opts")
 user=$(jq -r .username "$opts")
 pass=$(jq -r .password "$opts")
+sources=$(jq -r '(.allowed_sources // []) | join(",")' "$opts")
 
 # The add-on runs on the host network, so without credentials it would be
 # an open proxy for the whole LAN.
@@ -22,14 +23,20 @@ case "$pass" in
 	;;
 esac
 
+# 0.0.0.0/0 allows every source; an empty list is more likely a mistake.
+if [ -z "$sources" ]; then
+	echo "allowed_sources must not be empty" >&2
+	exit 1
+fi
+
 cfg=/tmp/3proxy.cfg
 cat > "$cfg" <<CFG
 log
 auth strong
 users "$user:CL:$pass"
-allow $user
+allow $user $sources
 socks -p$port -i$listen
 CFG
 
-echo "3proxy listening on $listen:$port"
+echo "3proxy listening on $listen:$port for $sources"
 exec 3proxy "$cfg"

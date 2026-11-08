@@ -10,15 +10,18 @@ Add-on store → ⋮ → Repositories, then install **3proxy**.
 
 ## Options
 
-| Option     | Default   | Description                                      |
-| ---------- | --------- | ------------------------------------------------ |
-| `listen`   | `0.0.0.0` | Address to listen on.                            |
-| `port`     | `1080`    | Port to listen on.                               |
-| `username` |           | Required.                                        |
-| `password` |           | Required; no spaces or double quotes.            |
+| Option            | Default                      | Description                                  |
+| ----------------- | ---------------------------- | -------------------------------------------- |
+| `listen`          | `0.0.0.0`                    | Address to listen on.                        |
+| `port`            | `1080`                       | Port to listen on.                           |
+| `username`        |                              | Required.                                    |
+| `password`        |                              | Required; no spaces or double quotes.        |
+| `allowed_sources` | `100.64.0.0/10`, `127.0.0.1` | IPv4 addresses or ranges clients may use the proxy from; `0.0.0.0/0` for any. |
 
-The add-on uses the host network, so the proxy is reachable from the LAN
-unless `listen` is set to a single address, such as the Tailscale IP.
+The add-on uses the host network, so with `0.0.0.0` it listens on every
+address of the host. By default only Tailscale clients and the host itself
+may use it; add your LAN's range to `allowed_sources` to allow it too. Binding
+to the Tailscale IP doesn't work: connections to it are refused.
 
 ## Usage
 
